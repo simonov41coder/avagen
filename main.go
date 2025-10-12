@@ -37,10 +37,34 @@ func generateAvatar(name string, size *int, grid *int) (*bytes.Buffer, error) {
 	}
 
 	hashed := hashByte(name)
+	
+	// Generate color avoiding pure white and black
+	r := hashed[0]
+	g := hashed[1]
+	b := hashed[2]
+	
+	// Ensure color is not too close to white or black
+	// Clamp values to range [30, 225] to avoid extremes
+	if r > 225 {
+		r = 225
+	} else if r < 30 {
+		r = 30
+	}
+	if g > 225 {
+		g = 225
+	} else if g < 30 {
+		g = 30
+	}
+	if b > 225 {
+		b = 225
+	} else if b < 30 {
+		b = 30
+	}
+	
 	avatarColor := color.RGBA{
-		R: hashed[0],
-		G: hashed[1],
-		B: hashed[2],
+		R: r,
+		G: g,
+		B: b,
 		A: 255,
 	}
 
