@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"crypto/md5"
+	"github.com/zeebo/xxh3"
 	"image"
 	"image/color"
 	"image/draw"
@@ -19,11 +19,11 @@ const (
 	defaultAvatarName = "saitama"
 )
 
-// hashByte computes MD5 hash of a string and returns the byte slice
+// hashByte computes 16bytes hash of a string and returns the byte slice
 func hashByte(str string) []byte {
-	hasher := md5.New()
-	hasher.Write([]byte(str))
-	return hasher.Sum(nil)
+    hash := xxh3.Hash128([]byte(str))
+    b := hash.Bytes()
+    return b[:]
 }
 
 // generateAvatar creates a deterministic avatar image based on a name
