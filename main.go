@@ -114,8 +114,7 @@ func drawSymmetricalBlocks(img *image.RGBA, x, y int, size int, grid int, blockS
 
 // main demonstrates how to use the GenerateAvatar function
 func main() {
-	// Generate an avatar for "saitama" with default size and grid
-	avatarBytes, err := GenerateAvatar("",256, 6)
+	avatarBytes, err := GenerateAvatar("Aurel",256, 6)
 	if err != nil {
 		panic(err)
 	}

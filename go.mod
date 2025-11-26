@@ -1,4 +1,4 @@
-module random_avatars
+module github.com/simonov41coder/avagen
 
 go 1.24.5
 
