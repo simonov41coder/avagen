@@ -1,2 +1,2 @@
 # avagen
-simple avatars generator based on md5 hashing
+simple avatars generator that use the inputed name then convert it to picture, like how is itvon github
