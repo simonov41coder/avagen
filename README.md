@@ -1,4 +1,4 @@
-# Avagen <img src="https://s6.imgcdn.dev/YKoZQd.png" alt="Avagen logo" style="height:2rem;">
+# Avagen <img src="https://s6.imgcdn.dev/YKoZQd.png" alt="Avagen logo" style="height:1rem;">
 
 ![Avagen](https://img.shields.io/badge/Avagen-v1.0.0-blue)
 
