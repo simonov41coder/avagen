@@ -2,47 +2,49 @@ package main
 
 import (
 	"bytes"
-	"github.com/zeebo/xxh3"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
-	"log"
-	"net/http"
-	"strconv"
+	"os"
+	
+	"github.com/zeebo/xxh3"
 )
 
 const (
 	defaultSize       = 256
 	defaultGrid       = 6
 	maxAvatarSize     = 1080
-	defaultAvatarName = "saitama"
 )
 
 // hashByte computes 16bytes hash of a string and returns the byte slice
 func hashByte(str string) []byte {
-    hash := xxh3.Hash128([]byte(str))
-    b := hash.Bytes()
-    return b[:]
+	hash := xxh3.Hash128([]byte(str))
+	b := hash.Bytes()
+	return b[:]
 }
 
-// generateAvatar creates a deterministic avatar image based on a name
-func generateAvatar(name string, size *int, grid *int) (*bytes.Buffer, error) {
-	// Set defaults
-	if size == nil {
-		size = intPtr(defaultSize)
+// GenerateAvatar creates a deterministic avatar image based on a name
+// and returns the image data as bytes
+func GenerateAvatar(name string, size, grid int) ([]byte, error) {
+	// Validate and set defaults
+	if size <= 0 {
+		size = defaultSize
 	}
-	if grid == nil {
-		grid = intPtr(defaultGrid)
+	if size > maxAvatarSize {
+		size = maxAvatarSize
+	}
+	if grid <= 0 {
+		grid = defaultGrid
 	}
 
 	hashed := hashByte(name)
-	
+
 	// Generate color avoiding pure white and black
 	r := hashed[0]
 	g := hashed[1]
 	b := hashed[2]
-	
+
 	// Ensure color is not too close to white or black
 	// Clamp values to range [30, 225] to avoid extremes
 	if r > 225 {
@@ -60,7 +62,7 @@ func generateAvatar(name string, size *int, grid *int) (*bytes.Buffer, error) {
 	} else if b < 30 {
 		b = 30
 	}
-	
+
 	avatarColor := color.RGBA{
 		R: r,
 		G: g,
@@ -68,17 +70,17 @@ func generateAvatar(name string, size *int, grid *int) (*bytes.Buffer, error) {
 		A: 255,
 	}
 
-	img := image.NewRGBA(image.Rect(0, 0, *size, *size))
-	blockSize := float64(*size) / float64(*grid)
-	gridHalf := (*grid + 1) / 2
+	img := image.NewRGBA(image.Rect(0, 0, size, size))
+	blockSize := float64(size) / float64(grid)
+	gridHalf := (grid + 1) / 2
 
 	// Generate the avatar pattern by iterating through half the grid
 	// and mirroring blocks to create symmetry
-	for y := 0; y < *grid; y++ {
+	for y := 0; y < grid; y++ {
 		for x := 0; x < gridHalf; x++ {
 			hashIndex := (x + y*gridHalf) % 16
 			if hashed[hashIndex]%2 == 0 {
-				drawSymmetricalBlocks(img, x, y, *size, *grid, blockSize, avatarColor)
+				drawSymmetricalBlocks(img, x, y, size, grid, blockSize, avatarColor)
 			}
 		}
 	}
@@ -87,7 +89,7 @@ func generateAvatar(name string, size *int, grid *int) (*bytes.Buffer, error) {
 	if err := png.Encode(&buffer, img); err != nil {
 		return nil, err
 	}
-	return &buffer, nil
+	return buffer.Bytes(), nil
 }
 
 // drawSymmetricalBlocks draws a colored block and its horizontal mirror
@@ -110,62 +112,19 @@ func drawSymmetricalBlocks(img *image.RGBA, x, y int, size int, grid int, blockS
 	draw.Draw(img, rightRect, &image.Uniform{c}, image.Point{}, draw.Src)
 }
 
-// intPtr returns a pointer to an int
-func intPtr(val int) *int {
-	return &val
-}
-
-// parseIntParam parses a string to an int pointer, returning nil if parsing fails
-func parseIntParam(value string) *int {
-	if value == "" {
-		return nil
-	}
-	intVal, err := strconv.Atoi(value)
-	if err != nil {
-		return nil
-	}
-	return intPtr(intVal)
-}
-
-// handleAvatar handles HTTP requests for avatar generation
-func handleAvatar(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-
-	// Get name parameter with default
-	name := query.Get("name")
-	if name == "" {
-		name = defaultAvatarName
-	}
-
-	// Parse size parameter
-	size := parseIntParam(query.Get("resolution"))
-	if size != nil && *size > maxAvatarSize {
-		http.Error(w, "Requested payload exceeds maximum allowed size of 1080px", http.StatusRequestEntityTooLarge)
-		return
-	}
-
-	// Parse grid parameter
-	grid := parseIntParam(query.Get("grid"))
-
-	// Generate avatar
-	buf, err := generateAvatar(name, size, grid)
-	if err != nil {
-		http.Error(w, "Failed to generate avatar", http.StatusInternalServerError)
-		log.Printf("Error generating avatar for '%s': %v", name, err)
-		return
-	}
-
-	// Send response
-	w.Header().Set("Content-Type", "image/png")
-	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
-
-	if _, err := buf.WriteTo(w); err != nil {
-		log.Printf("Failed to write image data: %v", err)
-	}
-}
-
+// main demonstrates how to use the GenerateAvatar function
 func main() {
-	http.HandleFunc("/avatar", handleAvatar)
-	log.Println("Server starting on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Generate an avatar for "saitama" with default size and grid
+	avatarBytes, err := GenerateAvatar("",256, 6)
+	if err != nil {
+		panic(err)
+	}
+
+	// Save the avatar to a file
+	err = os.WriteFile("avatar.png", avatarBytes, 0644)
+	if err != nil {
+		panic(err)
+	}
+
+	println("Avatar generated successfully: avatar.png")
 }
