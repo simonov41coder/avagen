@@ -1,4 +1,5 @@
-# Avagen
+# Avagen <img src="https://s6.imgcdn.dev/YKoZQd.png" alt="Avagen logo" style="height:2rem;">
+
 ![Avagen](https://img.shields.io/badge/Avagen-v1.0.0-blue)
 
 **Avagen** is a Go library to generate deterministic, symmetrical avatar images from strings. It's ideal for profile pictures or identicons.
