@@ -111,19 +111,3 @@ func drawSymmetricalBlocks(img *image.RGBA, x, y int, size int, grid int, blockS
 	rightRect := image.Rect(rightX1, y1, rightX2, y2)
 	draw.Draw(img, rightRect, &image.Uniform{c}, image.Point{}, draw.Src)
 }
-
-// main demonstrates how to use the GenerateAvatar function
-func main() {
-	avatarBytes, err := GenerateAvatar("Aurel",256, 6)
-	if err != nil {
-		panic(err)
-	}
-
-	// Save the avatar to a file
-	err = os.WriteFile("avatar.png", avatarBytes, 0644)
-	if err != nil {
-		panic(err)
-	}
-
-	println("Avatar generated successfully: avatar.png")
-}
