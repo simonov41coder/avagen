@@ -34,6 +34,16 @@ os.WriteFile("avatar.png", avatarBytes, 0644)
 - `size` (int): Avatar size in pixels (default: 256, max: 1080).
 - `grid` (int): Number of blocks in the avatar grid (default: 6).
 
+## Star History
+
+<a href="https://www.star-history.com/?repos=simonov41coder%2Favagen&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=simonov41coder/avagen&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=simonov41coder/avagen&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=simonov41coder/avagen&type=date&legend=top-left" />
+ </picture>
+</a>
+
 ---
 
 Enjoy creating unique, deterministic avatars for your projects!
